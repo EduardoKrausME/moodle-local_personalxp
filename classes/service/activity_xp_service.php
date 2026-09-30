@@ -136,7 +136,7 @@ class activity_xp_service {
             $record->timemodified = time();
             $DB->update_record('local_personalxp_activity', $record);
         } catch (\Throwable) {
-            // The local estimate deliberately remains valid when AI is unavailable.
+            return;
         }
     }
 
@@ -310,7 +310,7 @@ class activity_xp_service {
             $descriptor['questiontypes'] = $types;
             $descriptor['questions'] = $questions;
         } catch (\Throwable) {
-            // Keep the generic quiz descriptor if structure loading fails.
+            $descriptor['questioncount'] = 0;
         }
 
         return $descriptor;
