@@ -82,3 +82,12 @@ $string['xpforum'] = 'XP per forum post';
 $string['xpforum_desc'] = 'XP awarded for a forum post. A daily cap prevents point farming.';
 $string['xpquiz'] = 'XP for quiz submission';
 $string['xpquiz_desc'] = 'XP awarded for submitting a quiz attempt. It rewards participation and is independent from the grade.';
+
+$string['aienabled'] = 'Use AI to refine activity XP';
+$string['aienabled_desc'] = 'Queues an AI Bridge assessment after an activity is created or its scoring-relevant content changes. If AI is unavailable, the deterministic local estimate remains in use.';
+$string['maxactivityxp'] = 'Maximum XP per activity';
+$string['maxactivityxp_desc'] = 'Upper limit applied after time and difficulty are converted to XP.';
+$string['minactivityxp'] = 'Minimum XP per activity';
+$string['minactivityxp_desc'] = 'Lower limit applied after time and difficulty are converted to XP.';
+$string['xpperminute'] = 'Base XP per estimated minute';
+$string['xpperminute_desc'] = 'Base XP used before the difficulty multiplier is applied. Difficulty multipliers are controlled by the plugin, not by AI.';
