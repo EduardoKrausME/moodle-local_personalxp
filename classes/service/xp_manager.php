@@ -262,7 +262,8 @@ class xp_manager {
      *     nextlevel:?string,
      *     levelprogress:int,
      *     xptonext:int,
-     *     activitycompletionxp:int
+     *     activitycompletionxp:int,
+     *     activityxpmap:array<int,int>
      * }
      */
     public static function get_course_display_state(int $userid, int $courseid): array {
@@ -274,6 +275,7 @@ class xp_manager {
             'levelprogress' => 0,
             'xptonext' => 0,
             'activitycompletionxp' => 0,
+            'activityxpmap' => [],
         ];
 
         if (!self::is_enabled() || $userid <= 0 || $courseid <= 0) {
@@ -294,6 +296,7 @@ class xp_manager {
             'levelprogress' => (int) $levelstate['progress'],
             'xptonext' => $xptonext,
             'activitycompletionxp' => max(0, self::get_int_setting('xpactivity', 20)),
+            'activityxpmap' => activity_xp_service::get_course_xp_map($courseid),
         ];
     }
 }
