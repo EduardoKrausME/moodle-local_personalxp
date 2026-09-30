@@ -98,3 +98,17 @@ The learner sees only their own XP and progress. Teachers with the report capabi
 ## License
 
 GNU GPL v3 or later.
+
+## Adaptive activity XP with AI Bridge
+
+\`local_personalxp\` requires \`local_ai_bridge >= 2026093001\`. The bridge can be disabled at runtime, but it must be installed.
+
+Create and route the AI Bridge purpose:
+
+\`personalxp-assess-activity\`
+
+When a course module is created or relevant content changes, Personal XP stores a deterministic local estimate immediately and queues an ad hoc AI refinement. AI only estimates cognitive difficulty and realistic effort; PHP owns the XP formula and clamps the final value to the configured minimum and maximum.
+
+With the defaults, XP is calculated from estimated minutes at 2 XP/minute and a difficulty multiplier from 1.00 to 2.80. For example, a two-minute easy Page is 4 XP, while a 20-minute difficulty-5 activity is 112 XP.
+
+Page reading time is calculated locally from text length and cannot be inflated by AI. Quiz scoring is recalculated when quiz slots are created, deleted or switched to another question version, so a quiz is not permanently scored while it is still empty.
