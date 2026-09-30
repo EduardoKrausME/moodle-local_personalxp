@@ -41,10 +41,8 @@ function xmldb_local_personalxp_upgrade(int $oldversion): bool {
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
 
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_key('cmfk', XMLDB_KEY_FOREIGN, ['cmid'], 'course_modules', ['id']);
+        $table->add_key('cmiduniq', XMLDB_KEY_UNIQUE, ['cmid']);
         $table->add_key('coursefk', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
-        $table->add_index('cmiduniq', XMLDB_INDEX_UNIQUE, ['cmid']);
-        $table->add_index('courseidx', XMLDB_INDEX_NOTUNIQUE, ['courseid']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
