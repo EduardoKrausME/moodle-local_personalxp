@@ -49,6 +49,7 @@ final class xp_manager_test extends \advanced_testcase {
         $this->assertSame('Apprentice', $state['current']['name']);
         $this->assertSame('Explorer', $state['next']['name']);
         $this->assertSame(25, $state['progress']);
+    }
 
     public function test_course_display_state_respects_enabled_setting(): void {
         $this->resetAfterTest();
@@ -76,6 +77,5 @@ final class xp_manager_test extends \advanced_testcase {
         $this->assertSame(25, $state['levelprogress']);
         $this->assertSame(150, $state['xptonext']);
         $this->assertSame(25, $state['activitycompletionxp']);
-    }
     }
 }
