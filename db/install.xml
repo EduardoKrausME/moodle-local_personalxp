@@ -61,13 +61,9 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="cmfk" TYPE="foreign" FIELDS="cmid" REFTABLE="course_modules" REFFIELDS="id"/>
+        <KEY NAME="cmiduniq" TYPE="unique" FIELDS="cmid"/>
         <KEY NAME="coursefk" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
       </KEYS>
-      <INDEXES>
-        <INDEX NAME="cmiduniq" UNIQUE="true" FIELDS="cmid"/>
-        <INDEX NAME="courseidx" UNIQUE="false" FIELDS="courseid"/>
-      </INDEXES>
     </TABLE>
   </TABLES>
 </XMLDB>
