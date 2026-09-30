@@ -58,8 +58,8 @@ class observer {
         try {
             $cm = get_fast_modinfo($courseid, $userid)->get_cm($cmid);
             $label = get_string('activitycompletedwithname', 'local_personalxp', $cm->name);
-        } catch (\Throwable $exception) {
-            // Keep a generic label if the activity is not available anymore.
+        } catch (\Throwable) {
+            $label = get_string('activitycompleted', 'local_personalxp');
         }
 
         xp_manager::award(

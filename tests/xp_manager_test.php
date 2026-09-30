@@ -32,6 +32,7 @@ use local_personalxp\service\xp_manager;
  * @package    local_personalxp
  * @copyright  2026 Eduardo Kraus
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers     \local_personalxp\service\xp_manager
  */
 final class xp_manager_test extends \advanced_testcase {
     public function test_parse_levels_orders_and_ignores_invalid_lines(): void {
