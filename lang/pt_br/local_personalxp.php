@@ -83,3 +83,12 @@ $string['xpforum'] = 'XP por postagem no fórum';
 $string['xpforum_desc'] = 'XP concedido por participação no fórum. Um limite diário evita fazenda de pontos.';
 $string['xpquiz'] = 'XP por envio de tentativa no questionário';
 $string['xpquiz_desc'] = 'XP concedido ao enviar uma tentativa. Premia participação e não depende da nota.';
+
+$string['aienabled'] = 'Usar IA para refinar o XP das atividades';
+$string['aienabled_desc'] = 'Enfileira uma análise pelo AI Bridge após criar a atividade ou alterar conteúdo relevante para a pontuação. Se a IA estiver indisponível, permanece a estimativa local determinística.';
+$string['maxactivityxp'] = 'XP máximo por atividade';
+$string['maxactivityxp_desc'] = 'Limite superior aplicado depois que tempo e dificuldade são convertidos em XP.';
+$string['minactivityxp'] = 'XP mínimo por atividade';
+$string['minactivityxp_desc'] = 'Limite inferior aplicado depois que tempo e dificuldade são convertidos em XP.';
+$string['xpperminute'] = 'XP base por minuto estimado';
+$string['xpperminute_desc'] = 'XP base usado antes do multiplicador de dificuldade. Os multiplicadores pertencem ao plugin, não à IA.';
