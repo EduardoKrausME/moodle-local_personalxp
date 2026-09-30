@@ -1,0 +1,43 @@
+.local-personalxp-page .personalxp-card {
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    max-width: 48rem;
+    background: var(--bs-body-bg, #fff);
+}
+
+.local-personalxp-page .personalxp-eyebrow {
+    font-size: .8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    opacity: .7;
+}
+
+.local-personalxp-page .personalxp-level {
+    margin: .25rem 0;
+}
+
+.local-personalxp-page .personalxp-total {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.local-personalxp-page .personalxp-progress {
+    height: .8rem;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--bs-secondary-bg, #e9ecef);
+    margin: 1rem 0 .5rem;
+}
+
+.local-personalxp-page .personalxp-progress-bar {
+    height: 100%;
+    border-radius: inherit;
+    background: currentColor;
+}
+
+.local-personalxp-page .personalxp-next {
+    opacity: .8;
+}
