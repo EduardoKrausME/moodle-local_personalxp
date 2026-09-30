@@ -49,5 +49,33 @@ final class xp_manager_test extends \advanced_testcase {
         $this->assertSame('Apprentice', $state['current']['name']);
         $this->assertSame('Explorer', $state['next']['name']);
         $this->assertSame(25, $state['progress']);
+
+    public function test_course_display_state_respects_enabled_setting(): void {
+        $this->resetAfterTest();
+        set_config('enabled', 0, 'local_personalxp');
+        $state = xp_manager::get_course_display_state(123, 456);
+        $this->assertFalse($state['enabled']);
+        $this->assertSame(0, $state['totalxp']);
+    }
+
+    public function test_course_display_state_returns_level_and_completion_reward(): void {
+        $this->resetAfterTest();
+        set_config('enabled', 1, 'local_personalxp');
+        set_config('levels', "0|Beginner\n100|Apprentice\n300|Explorer", 'local_personalxp');
+        set_config('xpactivity', 25, 'local_personalxp');
+
+        $user = $this->getDataGenerator()->create_user();
+        $course = $this->getDataGenerator()->create_course();
+        xp_manager::award($user->id, $course->id, 'test', 1, 150, 'Test', 'local_personalxp', __METHOD__);
+
+        $state = xp_manager::get_course_display_state($user->id, $course->id);
+        $this->assertTrue($state['enabled']);
+        $this->assertSame(150, $state['totalxp']);
+        $this->assertSame('Apprentice', $state['currentlevel']);
+        $this->assertSame('Explorer', $state['nextlevel']);
+        $this->assertSame(25, $state['levelprogress']);
+        $this->assertSame(150, $state['xptonext']);
+        $this->assertSame(25, $state['activitycompletionxp']);
+    }
     }
 }
