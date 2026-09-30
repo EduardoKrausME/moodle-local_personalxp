@@ -246,4 +246,54 @@ class xp_manager {
 
         return ['current' => $current, 'next' => $next, 'progress' => $progress];
     }
+
+    /**
+     * Return a stable presentation snapshot for integrations such as themes.
+     *
+     * Consumers must not query Personal XP tables directly. When the plugin is disabled,
+     * this method returns enabled=false and no XP UI should be rendered.
+     *
+     * @param int $userid User id.
+     * @param int $courseid Course id.
+     * @return array{
+     *     enabled:bool,
+     *     totalxp:int,
+     *     currentlevel:string,
+     *     nextlevel:?string,
+     *     levelprogress:int,
+     *     xptonext:int,
+     *     activitycompletionxp:int
+     * }
+     */
+    public static function get_course_display_state(int $userid, int $courseid): array {
+        $empty = [
+            'enabled' => false,
+            'totalxp' => 0,
+            'currentlevel' => '',
+            'nextlevel' => null,
+            'levelprogress' => 0,
+            'xptonext' => 0,
+            'activitycompletionxp' => 0,
+        ];
+
+        if (!self::is_enabled() || $userid <= 0 || $courseid <= 0) {
+            return $empty;
+        }
+
+        $totalxp = self::get_total($userid, $courseid);
+        $levelstate = self::get_level_state($totalxp);
+        $xptonext = $levelstate['next'] === null
+            ? 0
+            : max(0, (int) $levelstate['next']['xp'] - $totalxp);
+
+        return [
+            'enabled' => true,
+            'totalxp' => $totalxp,
+            'currentlevel' => (string) $levelstate['current']['name'],
+            'nextlevel' => $levelstate['next'] === null ? null : (string) $levelstate['next']['name'],
+            'levelprogress' => (int) $levelstate['progress'],
+            'xptonext' => $xptonext,
+            'activitycompletionxp' => max(0, self::get_int_setting('xpactivity', 20)),
+        ];
+    }
 }
