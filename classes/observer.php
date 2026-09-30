@@ -5,14 +5,6 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Event observer for Personal XP.
@@ -24,6 +16,7 @@
 
 namespace local_personalxp;
 
+use local_personalxp\service\activity_xp_service;
 use local_personalxp\service\xp_manager;
 
 /**
@@ -34,6 +27,42 @@ use local_personalxp\service\xp_manager;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class observer {
+    /**
+     * Create or refresh the adaptive XP assessment when a course module is created.
+     *
+     * @param \core\event\course_module_created $event Event.
+     */
+    public static function course_module_created(\core\event\course_module_created $event): void {
+        activity_xp_service::queue_assessment((int) $event->contextinstanceid, (int) $event->userid);
+    }
+
+    /**
+     * Refresh adaptive XP when the activity is edited.
+     *
+     * @param \core\event\course_module_updated $event Event.
+     */
+    public static function course_module_updated(\core\event\course_module_updated $event): void {
+        activity_xp_service::queue_assessment((int) $event->contextinstanceid, (int) $event->userid);
+    }
+
+    /**
+     * Remove the persisted assessment when a course module is deleted.
+     *
+     * @param \core\event\course_module_deleted $event Event.
+     */
+    public static function course_module_deleted(\core\event\course_module_deleted $event): void {
+        activity_xp_service::delete_assessment((int) $event->contextinstanceid);
+    }
+
+    /**
+     * Reassess a quiz after its question structure changes.
+     *
+     * @param \core\event\base $event Quiz structure event.
+     */
+    public static function quiz_structure_changed(\core\event\base $event): void {
+        activity_xp_service::queue_assessment((int) $event->contextinstanceid, (int) $event->userid);
+    }
+
     /**
      * Award XP when an activity becomes complete.
      *
@@ -52,7 +81,7 @@ class observer {
         $userid = (int) $event->relateduserid;
         $courseid = (int) $event->courseid;
         $cmid = (int) $event->contextinstanceid;
-        $xp = max(0, xp_manager::get_int_setting('xpactivity', 20));
+        $xp = activity_xp_service::get_xp($cmid);
 
         $label = get_string('activitycompleted', 'local_personalxp');
         try {
