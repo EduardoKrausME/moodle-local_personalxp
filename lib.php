@@ -33,8 +33,8 @@ use local_personalxp\service\xp_manager;
  */
 function local_personalxp_extend_navigation_course(
     navigation_node $parentnode,
-    stdClass        $course,
-    context_course  $context
+    stdClass $course,
+    context_course $context
 ): void {
     if (!xp_manager::is_enabled()) {
         return;

@@ -70,11 +70,11 @@ class xp_manager {
      * @return bool True when XP was awarded.
      */
     public static function award(
-        int    $userid,
-        int    $courseid,
+        int $userid,
+        int $courseid,
         string $rulekey,
-        int    $objectid,
-        int    $xp,
+        int $objectid,
+        int $xp,
         string $label,
         string $component,
         string $eventname
