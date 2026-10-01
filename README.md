@@ -56,7 +56,7 @@ continue rather than another reason to leave.
 - Configurable levels using a simple `XP|Name` format.
 - Learner dashboard with current level, progress to the next level and recent XP history.
 - Teacher report ordered by learner name, not by XP.
-- Moodle Privacy API support, including export and deletion of user data.
+- Moodle Privacy API integration, including export and deletion of user data.
 - English and Brazilian Portuguese language packs.
 - No leaderboard, podium, league or learner-to-learner ranking.
 
@@ -106,10 +106,7 @@ over a potentially large history table.
 
 ## Adaptive activity XP with AI Bridge
 
-\`local_personalxp\` requires \`local_ai_bridge >= 2026093001\`. The bridge can be disabled at runtime, but it must be
-installed.
-
-Create and route the AI Bridge purpose:
+For adaptive scoring, `local_personalxp` uses `local_ai_bridge` through the purpose:
 
 \`personalxp-assess-activity\`
 
@@ -121,5 +118,5 @@ With the defaults, XP is calculated from estimated minutes at 2 XP/minute and a 
 For example, a two-minute easy Page is 4 XP, while a 20-minute difficulty-5 activity is 112 XP.
 
 Page reading time is calculated locally from text length and cannot be inflated by AI. Quiz scoring is recalculated when
-quiz slots are created, deleted or switched to another question version, so a quiz is not permanently scored while it is
+quiz slots are created, deleted or switched to another question revision, so a quiz is not permanently scored while it is
 still empty.
