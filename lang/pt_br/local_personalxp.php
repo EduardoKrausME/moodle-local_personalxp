@@ -22,12 +22,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
 $string['activitycompleted'] = 'Atividade concluída';
+$string['activitycompletedwithname'] = 'Concluiu: {$a}';
 $string['aienabled'] = 'Usar IA para refinar o XP das atividades';
 $string['aienabled_desc'] = 'Enfileira uma análise pelo AI Bridge após criar a atividade ou alterar conteúdo relevante para a pontuação. Se a IA estiver indisponível, permanece a estimativa local determinística.';
-$string['activitycompletedwithname'] = 'Concluiu: {$a}';
 $string['coursecompleted'] = 'Curso concluído';
 $string['currentlevel'] = 'Nível atual';
 $string['defaultlevel'] = 'Iniciante';
@@ -45,8 +45,7 @@ $string['levelexplorer'] = 'Explorador';
 $string['levelmaster'] = 'Mestre';
 $string['levelpractitioner'] = 'Praticante';
 $string['levels'] = 'Níveis';
-$string['levels_desc'] = 'Um nível por linha no formato XP|Nome, por exemplo 700|Praticante. A lista é ordenada ' .
-    'automaticamente pelo XP.';
+$string['levels_desc'] = 'Um nível por linha no formato XP|Nome, por exemplo 700|Praticante. A lista é ordenada automaticamente pelo XP.';
 $string['levelspecialist'] = 'Especialista';
 $string['maxactivityxp'] = 'XP máximo por atividade';
 $string['maxactivityxp_desc'] = 'Limite superior aplicado depois que tempo e dificuldade são convertidos em XP.';
@@ -75,8 +74,7 @@ $string['privacy:metadata:user:userid'] = 'O aluno cujo total está armazenado.'
 $string['quizsubmitted'] = 'Tentativa de questionário enviada';
 $string['recenthistory'] = 'Histórico recente de XP';
 $string['report'] = 'Relatório de XP Pessoal';
-$string['reportnocompetition'] = 'Este relatório propositalmente não ordena os alunos por XP. ' .
-    'O XP Pessoal mede o progresso de cada aluno e não é uma competição.';
+$string['reportnocompetition'] = 'Este relatório propositalmente não ordena os alunos por XP. O XP Pessoal mede o progresso de cada aluno e não é uma competição.';
 $string['source'] = 'Origem';
 $string['totalxpvalue'] = '{$a} XP conquistados';
 $string['when'] = 'Quando';
@@ -91,4 +89,3 @@ $string['xpperminute'] = 'XP base por minuto estimado';
 $string['xpperminute_desc'] = 'XP base usado antes do multiplicador de dificuldade. Os multiplicadores pertencem ao plugin, não à IA.';
 $string['xpquiz'] = 'XP por envio de tentativa no questionário';
 $string['xpquiz_desc'] = 'XP concedido ao enviar uma tentativa. Premia participação e não depende da nota.';
-

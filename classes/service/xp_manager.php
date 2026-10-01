@@ -24,6 +24,8 @@
 
 namespace local_personalxp\service;
 
+use dml_write_exception;
+
 /**
  * XP service.
  *
@@ -39,7 +41,7 @@ class xp_manager {
      */
     public static function is_enabled(): bool {
         $value = get_config('local_personalxp', 'enabled');
-        return $value === false ? true : (bool) $value;
+        return $value === false ? true : (bool)$value;
     }
 
     /**
@@ -51,7 +53,7 @@ class xp_manager {
      */
     public static function get_int_setting(string $name, int $default): int {
         $value = get_config('local_personalxp', $name);
-        return $value === false ? $default : (int) $value;
+        return $value === false ? $default : (int)$value;
     }
 
     /**
@@ -68,11 +70,11 @@ class xp_manager {
      * @return bool True when XP was awarded.
      */
     public static function award(
-        int $userid,
-        int $courseid,
+        int    $userid,
+        int    $courseid,
         string $rulekey,
-        int $objectid,
-        int $xp,
+        int    $objectid,
+        int    $xp,
         string $label,
         string $component,
         string $eventname
@@ -91,7 +93,7 @@ class xp_manager {
         $transaction = $DB->start_delegated_transaction();
         try {
             $now = time();
-            $log = (object) [
+            $log = (object)[
                 'userid' => $userid,
                 'courseid' => $courseid,
                 'rulekey' => substr($rulekey, 0, 64),
@@ -114,7 +116,7 @@ class xp_manager {
                 $summary->timemodified = $now;
                 $DB->update_record('local_personalxp_user', $summary);
             } else {
-                $DB->insert_record('local_personalxp_user', (object) [
+                $DB->insert_record('local_personalxp_user', (object)[
                     'userid' => $userid,
                     'courseid' => $courseid,
                     'totalxp' => $xp,
@@ -124,7 +126,7 @@ class xp_manager {
 
             $transaction->allow_commit();
             return true;
-        } catch (\dml_write_exception $exception) {
+        } catch (dml_write_exception $exception) {
             $transaction->rollback($exception);
             return false;
         }
@@ -139,7 +141,7 @@ class xp_manager {
      */
     public static function get_total(int $userid, int $courseid): int {
         global $DB;
-        return (int) $DB->get_field('local_personalxp_user', 'totalxp', [
+        return (int)$DB->get_field('local_personalxp_user', 'totalxp', [
             'userid' => $userid,
             'courseid' => $courseid,
         ]);
@@ -162,7 +164,7 @@ class xp_manager {
                    AND courseid = :courseid
                    AND rulekey = :rulekey
                    AND timecreated >= :since";
-        return (int) $DB->get_field_sql($sql, [
+        return (int)$DB->get_field_sql($sql, [
             'userid' => $userid,
             'courseid' => $courseid,
             'rulekey' => $rulekey,
@@ -181,7 +183,7 @@ class xp_manager {
     public static function parse_levels(?string $config = null): array {
         if ($config === null) {
             $stored = get_config('local_personalxp', 'levels');
-            if ($stored === false || trim((string) $stored) === '') {
+            if ($stored === false || trim((string)$stored) === '') {
                 $config = implode("\n", [
                     '0|' . get_string('levelbeginner', 'local_personalxp'),
                     '100|' . get_string('levelapprentice', 'local_personalxp'),
@@ -191,7 +193,7 @@ class xp_manager {
                     '3000|' . get_string('levelmaster', 'local_personalxp'),
                 ]);
             } else {
-                $config = (string) $stored;
+                $config = (string)$stored;
             }
         }
 
@@ -202,10 +204,10 @@ class xp_manager {
                 continue;
             }
             [$xp, $name] = array_map('trim', explode('|', $line, 2));
-            if ($name === '' || !is_numeric($xp) || (int) $xp < 0) {
+            if ($name === '' || !is_numeric($xp) || (int)$xp < 0) {
                 continue;
             }
-            $levels[] = ['xp' => (int) $xp, 'name' => clean_param($name, PARAM_TEXT)];
+            $levels[] = ['xp' => (int)$xp, 'name' => clean_param($name, PARAM_TEXT)];
         }
 
         if (!$levels) {
@@ -240,7 +242,7 @@ class xp_manager {
         $progress = 100;
         if ($next !== null) {
             $range = max(1, $next['xp'] - $current['xp']);
-            $progress = (int) floor((($xp - $current['xp']) / $range) * 100);
+            $progress = (int)floor((($xp - $current['xp']) / $range) * 100);
             $progress = max(0, min(100, $progress));
         }
 
@@ -286,14 +288,14 @@ class xp_manager {
         $levelstate = self::get_level_state($totalxp);
         $xptonext = $levelstate['next'] === null
             ? 0
-            : max(0, (int) $levelstate['next']['xp'] - $totalxp);
+            : max(0, (int)$levelstate['next']['xp'] - $totalxp);
 
         return [
             'enabled' => true,
             'totalxp' => $totalxp,
-            'currentlevel' => (string) $levelstate['current']['name'],
-            'nextlevel' => $levelstate['next'] === null ? null : (string) $levelstate['next']['name'],
-            'levelprogress' => (int) $levelstate['progress'],
+            'currentlevel' => (string)$levelstate['current']['name'],
+            'nextlevel' => $levelstate['next'] === null ? null : (string)$levelstate['next']['name'],
+            'levelprogress' => (int)$levelstate['progress'],
             'xptonext' => $xptonext,
             'activitycompletionxp' => max(0, self::get_int_setting('xpactivity', 20)),
             'activityxpmap' => activity_xp_service::get_course_xp_map($courseid),

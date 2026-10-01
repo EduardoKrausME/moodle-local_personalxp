@@ -24,10 +24,13 @@
 
 namespace local_personalxp\privacy;
 
+use context;
+use context_course;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
+use core_privacy\local\request\core_userlist_provider;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
@@ -42,7 +45,7 @@ use core_privacy\local\request\writer;
 class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\plugin\provider,
-    \core_privacy\local\request\core_userlist_provider {
+    core_userlist_provider {
 
     /**
      * Describe stored personal data.
@@ -93,7 +96,7 @@ class provider implements
         global $DB;
         $userid = $contextlist->get_user()->id;
         foreach ($contextlist->get_contexts() as $context) {
-            if (!$context instanceof \context_course) {
+            if (!$context instanceof context_course) {
                 continue;
             }
             $summary = $DB->get_record('local_personalxp_user', ['userid' => $userid, 'courseid' => $context->instanceid]);
@@ -103,27 +106,27 @@ class provider implements
                 'timecreated ASC'
             );
             $data = [
-                'totalxp' => $summary ? (int) $summary->totalxp : 0,
+                'totalxp' => $summary ? (int)$summary->totalxp : 0,
                 'history' => array_values(array_map(static function ($row) {
                     return [
-                        'xp' => (int) $row->xp,
+                        'xp' => (int)$row->xp,
                         'source' => $row->label,
                         'timecreated' => transform::datetime($row->timecreated),
                     ];
                 }, $history)),
             ];
-            writer::with_context($context)->export_data([get_string('pluginname', 'local_personalxp')], (object) $data);
+            writer::with_context($context)->export_data([get_string('pluginname', 'local_personalxp')], (object)$data);
         }
     }
 
     /**
      * Delete all user data in a context.
      *
-     * @param \context $context Context.
+     * @param context $context Context.
      */
-    public static function delete_data_for_all_users_in_context(\context $context): void {
+    public static function delete_data_for_all_users_in_context(context $context): void {
         global $DB;
-        if (!$context instanceof \context_course) {
+        if (!$context instanceof context_course) {
             return;
         }
         $DB->delete_records('local_personalxp_log', ['courseid' => $context->instanceid]);
@@ -139,7 +142,7 @@ class provider implements
         global $DB;
         $userid = $contextlist->get_user()->id;
         foreach ($contextlist->get_contexts() as $context) {
-            if (!$context instanceof \context_course) {
+            if (!$context instanceof context_course) {
                 continue;
             }
             $DB->delete_records('local_personalxp_log', ['userid' => $userid, 'courseid' => $context->instanceid]);
@@ -154,7 +157,7 @@ class provider implements
      */
     public static function get_users_in_context(userlist $userlist): void {
         $context = $userlist->get_context();
-        if (!$context instanceof \context_course) {
+        if (!$context instanceof context_course) {
             return;
         }
         $sql = "SELECT userid FROM {local_personalxp_user} WHERE courseid = :courseid";
@@ -169,7 +172,7 @@ class provider implements
     public static function delete_data_for_users(approved_userlist $userlist): void {
         global $DB;
         $context = $userlist->get_context();
-        if (!$context instanceof \context_course) {
+        if (!$context instanceof context_course) {
             return;
         }
         $userids = $userlist->get_userids();

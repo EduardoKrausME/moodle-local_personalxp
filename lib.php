@@ -22,6 +22,8 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_personalxp\service\xp_manager;
+
 /**
  * Extend course navigation.
  *
@@ -31,10 +33,10 @@
  */
 function local_personalxp_extend_navigation_course(
     navigation_node $parentnode,
-    stdClass $course,
-    context_course $context
+    stdClass        $course,
+    context_course  $context
 ): void {
-    if (!\local_personalxp\service\xp_manager::is_enabled()) {
+    if (!xp_manager::is_enabled()) {
         return;
     }
 

@@ -5,6 +5,14 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Adaptive activity XP service.
@@ -16,7 +24,13 @@
 
 namespace local_personalxp\service;
 
+use core\task\manager;
+use core_text;
+use local_ai_bridge\api;
 use local_personalxp\task\assess_course_module;
+use mod_quiz\quiz_settings;
+use stdClass;
+use Throwable;
 
 /**
  * Calculates and stores XP per course module.
@@ -47,20 +61,20 @@ class activity_xp_service {
 
         try {
             $descriptor = self::build_descriptor($cmid);
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return;
         }
 
         $hash = self::descriptor_hash($descriptor);
         $current = self::get_record($cmid);
-        if ($current && hash_equals((string) $current->contenthash, $hash)) {
+        if ($current && hash_equals((string)$current->contenthash, $hash)) {
             return;
         }
 
         self::save_local_estimate($descriptor, $hash);
 
         $aienabled = get_config('local_personalxp', 'aienabled');
-        if ($aienabled !== false && !(bool) $aienabled) {
+        if ($aienabled !== false && !(bool)$aienabled) {
             return;
         }
 
@@ -69,7 +83,7 @@ class activity_xp_service {
             'cmid' => $cmid,
             'userid' => max(0, $userid),
         ]);
-        \core\task\manager::queue_adhoc_task($task, true);
+        manager::queue_adhoc_task($task, true);
     }
 
     /**
@@ -86,7 +100,7 @@ class activity_xp_service {
         }
 
         $aienabled = get_config('local_personalxp', 'aienabled');
-        if ($aienabled !== false && !(bool) $aienabled) {
+        if ($aienabled !== false && !(bool)$aienabled) {
             return;
         }
 
@@ -94,37 +108,37 @@ class activity_xp_service {
             $descriptor = self::build_descriptor($cmid);
             $hash = self::descriptor_hash($descriptor);
             $current = self::get_record($cmid);
-            if (!$current || !hash_equals((string) $current->contenthash, $hash)) {
+            if (!$current || !hash_equals((string)$current->contenthash, $hash)) {
                 self::save_local_estimate($descriptor, $hash);
             }
 
             $localestimate = self::local_estimate($descriptor);
-            $response = \local_ai_bridge\api::generate(
+            $response = api::generate(
                 self::AI_PURPOSE,
                 self::build_ai_prompt($descriptor, $localestimate),
                 $userid
             );
-            $assessment = self::parse_ai_response((string) $response->text);
+            $assessment = self::parse_ai_response((string)$response->text);
             if ($assessment === null) {
                 return;
             }
 
-            $difficulty = max(1, min(5, (int) $assessment['difficulty']));
-            $minutes = max(1, min(180, (int) $assessment['estimated_minutes']));
+            $difficulty = max(1, min(5, (int)$assessment['difficulty']));
+            $minutes = max(1, min(180, (int)$assessment['estimated_minutes']));
 
             // For passive pages, reading time is deterministic and should not be inflated by the model.
             if ($descriptor['modname'] === 'page') {
-                $minutes = (int) $localestimate['estimated_minutes'];
+                $minutes = (int)$localestimate['estimated_minutes'];
                 $difficulty = min(2, $difficulty);
             }
 
             // A configured quiz time limit is a stronger signal than a model estimate.
-            if ($descriptor['modname'] === 'quiz' && (int) $descriptor['timelimit'] > 0) {
-                $minutes = max(1, (int) ceil(((int) $descriptor['timelimit']) / 60));
+            if ($descriptor['modname'] === 'quiz' && (int)$descriptor['timelimit'] > 0) {
+                $minutes = max(1, (int)ceil(((int)$descriptor['timelimit']) / 60));
             }
 
             $record = self::get_record($cmid);
-            if (!$record || !hash_equals((string) $record->contenthash, $hash)) {
+            if (!$record || !hash_equals((string)$record->contenthash, $hash)) {
                 return;
             }
 
@@ -132,10 +146,10 @@ class activity_xp_service {
             $record->difficulty = $difficulty;
             $record->estimatedminutes = $minutes;
             $record->source = 'ai';
-            $record->rationale = self::clean_reason((string) $assessment['reason']);
+            $record->rationale = self::clean_reason((string)$assessment['reason']);
             $record->timemodified = time();
             $DB->update_record('local_personalxp_activity', $record);
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return;
         }
     }
@@ -162,7 +176,7 @@ class activity_xp_service {
         if ($cmid > 0) {
             $xp = $DB->get_field('local_personalxp_activity', 'xp', ['cmid' => $cmid]);
             if ($xp !== false) {
-                return max(0, (int) $xp);
+                return max(0, (int)$xp);
             }
         }
 
@@ -185,7 +199,7 @@ class activity_xp_service {
         $records = $DB->get_records('local_personalxp_activity', ['courseid' => $courseid], '', 'cmid,xp');
         $map = [];
         foreach ($records as $record) {
-            $map[(int) $record->cmid] = max(0, (int) $record->xp);
+            $map[(int)$record->cmid] = max(0, (int)$record->xp);
         }
         return $map;
     }
@@ -214,7 +228,7 @@ class activity_xp_service {
             5 => 2.80,
         ];
 
-        $xp = (int) round($minutes * $xpperminute * $multipliers[$difficulty]);
+        $xp = (int)round($minutes * $xpperminute * $multipliers[$difficulty]);
         return max($minxp, min($maxxp, $xp));
     }
 
@@ -229,26 +243,26 @@ class activity_xp_service {
 
         $cm = $DB->get_record('course_modules', ['id' => $cmid], 'id,course,module,instance', MUST_EXIST);
         $module = $DB->get_record('modules', ['id' => $cm->module], 'id,name', MUST_EXIST);
-        $modname = (string) $module->name;
+        $modname = (string)$module->name;
         $instance = $DB->get_record($modname, ['id' => $cm->instance], '*', MUST_EXIST);
 
-        $intro = property_exists($instance, 'intro') ? self::plain_text((string) $instance->intro) : '';
-        $content = property_exists($instance, 'content') ? self::plain_text((string) $instance->content) : '';
-        $name = property_exists($instance, 'name') ? clean_param((string) $instance->name, PARAM_TEXT) : $modname;
+        $intro = property_exists($instance, 'intro') ? self::plain_text((string)$instance->intro) : '';
+        $content = property_exists($instance, 'content') ? self::plain_text((string)$instance->content) : '';
+        $name = property_exists($instance, 'name') ? clean_param((string)$instance->name, PARAM_TEXT) : $modname;
 
         if ($modname === 'book') {
             $chapters = $DB->get_records('book_chapters', ['bookid' => $cm->instance, 'hidden' => 0], 'pagenum', 'id,content');
             $parts = [];
             foreach ($chapters as $chapter) {
-                $parts[] = self::plain_text((string) $chapter->content);
+                $parts[] = self::plain_text((string)$chapter->content);
             }
             $content = implode("\n", $parts);
         }
 
         $descriptor = [
-            'cmid' => (int) $cm->id,
-            'courseid' => (int) $cm->course,
-            'instanceid' => (int) $cm->instance,
+            'cmid' => (int)$cm->id,
+            'courseid' => (int)$cm->course,
+            'instanceid' => (int)$cm->instance,
             'modname' => $modname,
             'name' => $name,
             'intro' => self::limit_text($intro, 3000),
@@ -271,19 +285,19 @@ class activity_xp_service {
      * Add quiz structure data using Moodle's quiz API.
      *
      * @param array<string, mixed> $descriptor Base descriptor.
-     * @param \stdClass $quiz Quiz record.
+     * @param stdClass $quiz Quiz record.
      * @return array<string, mixed>
      */
-    private static function add_quiz_data(array $descriptor, \stdClass $quiz): array {
+    private static function add_quiz_data(array $descriptor, stdClass $quiz): array {
         global $CFG;
 
         require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
-        $descriptor['timelimit'] = isset($quiz->timelimit) ? (int) $quiz->timelimit : 0;
+        $descriptor['timelimit'] = isset($quiz->timelimit) ? (int)$quiz->timelimit : 0;
         try {
-            $quizobj = \mod_quiz\quiz_settings::create((int) $quiz->id);
+            $quizobj = quiz_settings::create((int)$quiz->id);
             $structure = $quizobj->get_structure();
-            $count = (int) $structure->get_question_count();
+            $count = (int)$structure->get_question_count();
             $descriptor['questioncount'] = $count;
 
             $types = [];
@@ -291,10 +305,10 @@ class activity_xp_service {
             for ($slot = 1; $slot <= $count; $slot++) {
                 try {
                     $question = $structure->get_question_in_slot($slot);
-                } catch (\Throwable) {
+                } catch (Throwable) {
                     continue;
                 }
-                $qtype = isset($question->qtype) ? (string) $question->qtype : 'unknown';
+                $qtype = isset($question->qtype) ? (string)$question->qtype : 'unknown';
                 $types[$qtype] = ($types[$qtype] ?? 0) + 1;
 
                 if (count($questions) >= self::MAX_QUIZ_QUESTIONS) {
@@ -302,14 +316,14 @@ class activity_xp_service {
                 }
                 $questions[] = [
                     'type' => $qtype,
-                    'name' => isset($question->name) ? clean_param((string) $question->name, PARAM_TEXT) : '',
-                    'text' => self::limit_text(self::plain_text((string) ($question->questiontext ?? '')), 700),
+                    'name' => isset($question->name) ? clean_param((string)$question->name, PARAM_TEXT) : '',
+                    'text' => self::limit_text(self::plain_text((string)($question->questiontext ?? '')), 700),
                 ];
             }
 
             $descriptor['questiontypes'] = $types;
             $descriptor['questions'] = $questions;
-        } catch (\Throwable) {
+        } catch (Throwable) {
             $descriptor['questioncount'] = 0;
         }
 
@@ -323,10 +337,10 @@ class activity_xp_service {
      * @return array{difficulty:int,estimated_minutes:int,reason:string}
      */
     private static function local_estimate(array $descriptor): array {
-        $modname = (string) $descriptor['modname'];
-        $wordcount = (int) $descriptor['wordcount'];
-        $readingminutes = max(1, (int) ceil($wordcount / 200));
-        $minutes = max(1, (int) ceil(xp_manager::get_int_setting('xpactivity', 20) / 2));
+        $modname = (string)$descriptor['modname'];
+        $wordcount = (int)$descriptor['wordcount'];
+        $readingminutes = max(1, (int)ceil($wordcount / 200));
+        $minutes = max(1, (int)ceil(xp_manager::get_int_setting('xpactivity', 20) / 2));
         $difficulty = 1;
         $reason = 'Generic local estimate.';
 
@@ -344,11 +358,11 @@ class activity_xp_service {
                 break;
 
             case 'quiz':
-                $questioncount = (int) $descriptor['questioncount'];
-                $timelimit = (int) $descriptor['timelimit'];
-                $minutes = $timelimit > 0 ? max(1, (int) ceil($timelimit / 60)) : max(5, $questioncount * 2);
+                $questioncount = (int)$descriptor['questioncount'];
+                $timelimit = (int)$descriptor['timelimit'];
+                $minutes = $timelimit > 0 ? max(1, (int)ceil($timelimit / 60)) : max(5, $questioncount * 2);
                 $difficulty = $questioncount >= 25 ? 4 : ($questioncount >= 10 ? 3 : 2);
-                $types = array_keys((array) $descriptor['questiontypes']);
+                $types = array_keys((array)$descriptor['questiontypes']);
                 if (array_intersect($types, ['essay', 'calculated', 'calculatedmulti', 'calculatedsimple'])) {
                     $difficulty = min(5, $difficulty + 1);
                 }
@@ -394,16 +408,16 @@ class activity_xp_service {
 
         $estimate = self::local_estimate($descriptor);
         $now = time();
-        $record = self::get_record((int) $descriptor['cmid']);
+        $record = self::get_record((int)$descriptor['cmid']);
         if (!$record) {
-            $DB->insert_record('local_personalxp_activity', (object) [
-                'cmid' => (int) $descriptor['cmid'],
-                'courseid' => (int) $descriptor['courseid'],
-                'xp' => self::calculate_xp((int) $estimate['estimated_minutes'], (int) $estimate['difficulty']),
-                'difficulty' => (int) $estimate['difficulty'],
-                'estimatedminutes' => (int) $estimate['estimated_minutes'],
+            $DB->insert_record('local_personalxp_activity', (object)[
+                'cmid' => (int)$descriptor['cmid'],
+                'courseid' => (int)$descriptor['courseid'],
+                'xp' => self::calculate_xp((int)$estimate['estimated_minutes'], (int)$estimate['difficulty']),
+                'difficulty' => (int)$estimate['difficulty'],
+                'estimatedminutes' => (int)$estimate['estimated_minutes'],
                 'source' => 'local',
-                'rationale' => (string) $estimate['reason'],
+                'rationale' => (string)$estimate['reason'],
                 'contenthash' => $hash,
                 'timecreated' => $now,
                 'timemodified' => $now,
@@ -411,12 +425,12 @@ class activity_xp_service {
             return;
         }
 
-        $record->courseid = (int) $descriptor['courseid'];
-        $record->xp = self::calculate_xp((int) $estimate['estimated_minutes'], (int) $estimate['difficulty']);
-        $record->difficulty = (int) $estimate['difficulty'];
-        $record->estimatedminutes = (int) $estimate['estimated_minutes'];
+        $record->courseid = (int)$descriptor['courseid'];
+        $record->xp = self::calculate_xp((int)$estimate['estimated_minutes'], (int)$estimate['difficulty']);
+        $record->difficulty = (int)$estimate['difficulty'];
+        $record->estimatedminutes = (int)$estimate['estimated_minutes'];
         $record->source = 'local';
-        $record->rationale = (string) $estimate['reason'];
+        $record->rationale = (string)$estimate['reason'];
         $record->contenthash = $hash;
         $record->timemodified = $now;
         $DB->update_record('local_personalxp_activity', $record);
@@ -470,9 +484,9 @@ class activity_xp_service {
         }
 
         return [
-            'difficulty' => (int) $data['difficulty'],
-            'estimated_minutes' => (int) $data['estimated_minutes'],
-            'reason' => (string) $data['reason'],
+            'difficulty' => (int)$data['difficulty'],
+            'estimated_minutes' => (int)$data['estimated_minutes'],
+            'reason' => (string)$data['reason'],
         ];
     }
 
@@ -480,9 +494,9 @@ class activity_xp_service {
      * Get persisted activity assessment.
      *
      * @param int $cmid Course module id.
-     * @return \stdClass|false
+     * @return stdClass|false
      */
-    private static function get_record(int $cmid): \stdClass|false {
+    private static function get_record(int $cmid): stdClass|false {
         global $DB;
         return $DB->get_record('local_personalxp_activity', ['cmid' => $cmid]);
     }
@@ -506,7 +520,7 @@ class activity_xp_service {
      */
     private static function plain_text(string $html): string {
         $text = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        return trim((string) preg_replace('/\s+/u', ' ', $text));
+        return trim((string)preg_replace('/\s+/u', ' ', $text));
     }
 
     /**
@@ -528,10 +542,10 @@ class activity_xp_service {
      * @return string
      */
     private static function limit_text(string $text, int $length): string {
-        if (\core_text::strlen($text) <= $length) {
+        if (core_text::strlen($text) <= $length) {
             return $text;
         }
-        return \core_text::substr($text, 0, $length);
+        return core_text::substr($text, 0, $length);
     }
 
     /**

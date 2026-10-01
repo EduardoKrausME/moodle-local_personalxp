@@ -22,12 +22,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
 $string['activitycompleted'] = 'Activity completed';
+$string['activitycompletedwithname'] = 'Completed: {$a}';
 $string['aienabled'] = 'Use AI to refine activity XP';
 $string['aienabled_desc'] = 'Queues an AI Bridge assessment after an activity is created or its scoring-relevant content changes. If AI is unavailable, the deterministic local estimate remains in use.';
-$string['activitycompletedwithname'] = 'Completed: {$a}';
 $string['coursecompleted'] = 'Course completed';
 $string['currentlevel'] = 'Current level';
 $string['defaultlevel'] = 'Beginner';
@@ -74,8 +74,7 @@ $string['privacy:metadata:user:userid'] = 'The learner whose total is stored.';
 $string['quizsubmitted'] = 'Quiz attempt submitted';
 $string['recenthistory'] = 'Recent XP history';
 $string['report'] = 'Personal XP report';
-$string['reportnocompetition'] = 'This report is intentionally not ranked by XP. Personal XP measures each learner\'s own ' .
-    'progress and is not a competition.';
+$string['reportnocompetition'] = 'This report is intentionally not ranked by XP. Personal XP measures each learner\'s own progress and is not a competition.';
 $string['source'] = 'Source';
 $string['totalxpvalue'] = '{$a} XP earned';
 $string['when'] = 'When';
@@ -90,4 +89,3 @@ $string['xpperminute'] = 'Base XP per estimated minute';
 $string['xpperminute_desc'] = 'Base XP used before the difficulty multiplier is applied. Difficulty multipliers are controlled by the plugin, not by AI.';
 $string['xpquiz'] = 'XP for quiz submission';
 $string['xpquiz_desc'] = 'XP awarded for submitting a quiz attempt. It rewards participation and is independent from the grade.';
-

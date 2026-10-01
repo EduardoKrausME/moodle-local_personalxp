@@ -58,7 +58,7 @@ $table->head = [
 ];
 foreach ($users as $user) {
     $summary = $totals[$user->id] ?? null;
-    $totalxp = $summary ? (int) $summary->totalxp : 0;
+    $totalxp = $summary ? (int)$summary->totalxp : 0;
     $state = xp_manager::get_level_state($totalxp);
     $lastgain = $summary ? userdate($summary->timemodified) : get_string('never');
     $table->data[] = [

@@ -24,6 +24,7 @@
 
 namespace local_personalxp;
 
+use advanced_testcase;
 use local_personalxp\service\xp_manager;
 
 /**
@@ -34,7 +35,12 @@ use local_personalxp\service\xp_manager;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \local_personalxp\service\xp_manager
  */
-final class xp_manager_test extends \advanced_testcase {
+final class xp_manager_test extends advanced_testcase {
+    /**
+     * Method test_parse_levels_orders_and_ignores_invalid_lines.
+     *
+     * @return void Return value.
+     */
     public function test_parse_levels_orders_and_ignores_invalid_lines(): void {
         $levels = xp_manager::parse_levels("700|Practitioner\ninvalid\n0|Beginner\n100|Apprentice");
         $this->assertSame(0, $levels[0]['xp']);
@@ -42,6 +48,11 @@ final class xp_manager_test extends \advanced_testcase {
         $this->assertSame(700, $levels[2]['xp']);
     }
 
+    /**
+     * Method test_level_state_calculates_progress.
+     *
+     * @return void Return value.
+     */
     public function test_level_state_calculates_progress(): void {
         $this->resetAfterTest();
         set_config('levels', "0|Beginner\n100|Apprentice\n300|Explorer", 'local_personalxp');
@@ -51,6 +62,11 @@ final class xp_manager_test extends \advanced_testcase {
         $this->assertSame(25, $state['progress']);
     }
 
+    /**
+     * Method test_course_display_state_respects_enabled_setting.
+     *
+     * @return void Return value.
+     */
     public function test_course_display_state_respects_enabled_setting(): void {
         $this->resetAfterTest();
         set_config('enabled', 0, 'local_personalxp');
@@ -59,6 +75,11 @@ final class xp_manager_test extends \advanced_testcase {
         $this->assertSame(0, $state['totalxp']);
     }
 
+    /**
+     * Method test_course_display_state_returns_level_and_completion_reward.
+     *
+     * @return void Return value.
+     */
     public function test_course_display_state_returns_level_and_completion_reward(): void {
         $this->resetAfterTest();
         set_config('enabled', 1, 'local_personalxp');

@@ -65,7 +65,7 @@ echo html_writer::end_div();
 
 if ($state['next']) {
     $remaining = max(0, $state['next']['xp'] - $totalxp);
-    echo html_writer::div(get_string('nextlevel', 'local_personalxp', (object) [
+    echo html_writer::div(get_string('nextlevel', 'local_personalxp', (object)[
         'xp' => $remaining,
         'level' => $state['next']['name'],
     ]), 'personalxp-next');
@@ -96,7 +96,7 @@ if (!$history) {
         $table->data[] = [
             userdate($item->timecreated),
             s($item->label),
-            '+' . (int) $item->xp . ' XP',
+            '+' . (int)$item->xp . ' XP',
         ];
     }
     echo html_writer::table($table);
