@@ -22,6 +22,8 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
+
 if ($hassiteconfig) {
     $settings = new admin_settingpage('local_personalxp', get_string('pluginname', 'local_personalxp'));
 
