@@ -74,18 +74,6 @@ Forum XP is capped at 20 XP per course per day by default. All values can be cha
 XP is intentionally separate from grades. XP can represent participation and effort while grades continue to represent
 academic assessment. Submitting a quiz can therefore award XP without implying that the learner answered it correctly.
 
-## Installation
-
-Copy the plugin to:
-
-```text
-local/personalxp
-```
-
-Then visit **Site administration > Notifications** and complete the Moodle installation process.
-
-The plugin requires Moodle 4.5 or newer.
-
 ## Configuration
 
 Go to:
@@ -115,10 +103,6 @@ amount, label and a SHA-256 unique source hash used to prevent duplicate awards.
 
 `local_personalxp_user` stores the aggregated XP total for each user/course pair, avoiding repeated `SUM()` operations
 over a potentially large history table.
-
-## License
-
-GNU GPL v3 or later.
 
 ## Adaptive activity XP with AI Bridge
 
