@@ -173,6 +173,47 @@ class xp_manager {
     }
 
     /**
+     * Return XP awards in a half-open time interval.
+     *
+     * Presentation plugins can use this method to build personal period summaries
+     * without querying Personal XP tables directly.
+     *
+     * @param int $userid User id.
+     * @param int $courseid Course id.
+     * @param int $from Inclusive start timestamp.
+     * @param int $until Exclusive end timestamp.
+     * @return array<int, array{xp:int,timecreated:int}>
+     */
+    public static function get_awards_between(int $userid, int $courseid, int $from, int $until): array {
+        global $DB;
+
+        if ($userid <= 0 || $courseid <= 0 || $from < 0 || $until <= $from) {
+            return [];
+        }
+
+        $sql = "SELECT id, xp, timecreated
+                  FROM {local_personalxp_log}
+                 WHERE userid = :userid
+                   AND courseid = :courseid
+                   AND timecreated >= :fromtime
+                   AND timecreated < :untiltime
+              ORDER BY timecreated ASC, id ASC";
+        $records = $DB->get_records_sql($sql, [
+            'userid' => $userid,
+            'courseid' => $courseid,
+            'fromtime' => $from,
+            'untiltime' => $until,
+        ]);
+
+        return array_map(static function(\stdClass $record): array {
+            return [
+                'xp' => (int)$record->xp,
+                'timecreated' => (int)$record->timecreated,
+            ];
+        }, array_values($records));
+    }
+
+    /**
      * Parse configured levels.
      *
      * Format: one "XP|Name" pair per line.
