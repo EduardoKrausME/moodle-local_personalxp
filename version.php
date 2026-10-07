@@ -28,7 +28,7 @@ $plugin->release = '1.3.1';
 $plugin->version = 2026100301;
 $plugin->component = 'local_personalxp';
 $plugin->requires = 2024100700; // Moodle 4.5.
-$plugin->maturity = MATURITY_BETA;
+$plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = [
     'local_ai_bridge' => 2026093001,
 ];
