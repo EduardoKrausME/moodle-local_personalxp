@@ -120,3 +120,30 @@ For example, a two-minute easy Page is 4 XP, while a 20-minute difficulty-5 acti
 Page reading time is calculated locally from text length and cannot be inflated by AI. Quiz scoring is recalculated when
 quiz slots are created, deleted or switched to another question revision, so a quiz is not permanently scored while it is
 still empty.
+
+
+## MCP tools for ChatGPT and LearnLingo
+
+When `local_mcp` is installed and enabled, the plugin automatically exposes four
+tools through `classes/mcp/provider.php`, with no hard dependency on MCP:
+
+- `personalxp_get_course_xp(courseid, userid?)` reads personal course XP, current
+  and next levels, progress and per-activity XP using the same public
+  `xp_manager::get_course_display_state()` contract available to LearnLingo.
+  Completion progress and XP remain separate.
+- `personalxp_get_xp_history(courseid, userid?, limit?)` reads up to 50 award
+  events, with no competitive ranking.
+- `personalxp_get_settings()` reads all XP rules, configured levels and a
+  `state_hash`.
+- `personalxp_update_settings(settings, expected_hash)` edits selected settings
+  with preview, one-time confirmation and optimistic locking. Existing earned
+  XP is not rewritten.
+
+READ actions require `mcp:read`; settings updates require `mcp:write` and
+`moodle/site:config`. Learners can see only their own data. Instructors with
+`local/personalxp:viewreport` can read XP for enrolled learners in their course.
+Every course XP read also requires `local/personalxp:view`.
+
+The LearnLingo theme can show course completion progress alongside personal XP
+and levels by consuming the Personal XP service; MCP lets an administrator
+review and configure the same XP rules from ChatGPT.
