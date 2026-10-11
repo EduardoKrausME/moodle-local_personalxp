@@ -8,7 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU GPL for details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * MCP integration for Personal XP.
@@ -27,22 +31,44 @@ use local_mcp\read\tool_interface;
 use local_mcp\security\authenticated_identity;
 use local_personalxp\service\xp_manager;
 
-/** Recent learner XP awards without competitive rankings. */
+/**
+ * Recent learner XP awards without competitive rankings.
+ */
 final class get_xp_history implements tool_interface {
+    /**
+     * get_name
+     *
+     * @return string
+     */
     public function get_name(): string {
         return 'personalxp_get_xp_history';
     }
 
+    /**
+     * get_title
+     *
+     * @return string
+     */
     public function get_title(): string {
         return 'Get personal XP history';
     }
 
+    /**
+     * get_description
+     *
+     * @return string
+     */
     public function get_description(): string {
         return 'Get the most recent XP awards, source labels and timestamps for a learner '
             . 'in a course. No leaderboards. Defaults to the connected learner; viewing '
             . 'another enrolled learner requires the XP report permission. Maximum 50 entries.';
     }
 
+    /**
+     * get_input_schema
+     *
+     * @return array
+     */
     public function get_input_schema(): array {
         return [
             'type' => 'object',
@@ -58,14 +84,35 @@ final class get_xp_history implements tool_interface {
         ];
     }
 
+    /**
+     * get_required_capability
+     *
+     * @return string
+     */
     public function get_required_capability(): string {
         return 'local/personalxp:view';
     }
 
+    /**
+     * resolve_context
+     *
+     * @param array $arguments
+     * @return context
+     */
     public function resolve_context(array $arguments): context {
         return context_course::instance((int)$arguments['courseid'], MUST_EXIST);
     }
 
+    /**
+     * execute
+     *
+     * @param array $arguments
+     * @param authenticated_identity $identity
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws api_exception
+     */
     public function execute(array $arguments, authenticated_identity $identity): array {
         global $DB;
         $courseid = (int)$arguments['courseid'];

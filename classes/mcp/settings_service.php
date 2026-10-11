@@ -8,7 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU GPL for details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * MCP integration for Personal XP.
@@ -23,7 +27,9 @@ namespace local_personalxp\mcp;
 use local_mcp\exception\api_exception;
 use local_personalxp\service\xp_manager;
 
-/** Validated snapshots and partial edits of Personal XP settings. */
+/**
+ * Validated snapshots and partial edits of Personal XP settings.
+ */
 final class settings_service {
     /**
      * @return array Config types and default values.

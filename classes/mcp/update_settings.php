@@ -8,7 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU GPL for details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * MCP integration for Personal XP.
@@ -25,16 +29,33 @@ use context_system;
 use local_mcp\security\authenticated_identity;
 use local_mcp\write\tool\base_tool;
 
-/** Confirmed administrative edit of XP rules, not learner XP balances. */
+/**
+ * Confirmed administrative edit of XP rules, not learner XP balances.
+ */
 final class update_settings extends base_tool {
+    /**
+     * get_name
+     *
+     * @return string
+     */
     public function get_name(): string {
         return 'personalxp_update_settings';
     }
 
+    /**
+     * get_title
+     *
+     * @return string
+     */
     public function get_title(): string {
         return 'Update Personal XP rules and levels';
     }
 
+    /**
+     * get_description
+     *
+     * @return string
+     */
     public function get_description(): string {
         return 'Configure the Personal XP rewards, AI scoring, enablement and level thresholds '
             . 'used by Moodle and LearnLingo. Read personalxp_get_settings and provide its '
@@ -42,10 +63,20 @@ final class update_settings extends base_tool {
             . 'Existing XP awards are never modified.';
     }
 
+    /**
+     * get_required_capability
+     *
+     * @return string
+     */
     public function get_required_capability(): string {
         return 'moodle/site:config';
     }
 
+    /**
+     * get_input_schema
+     *
+     * @return array
+     */
     public function get_input_schema(): array {
         $fields = [];
         foreach (settings_service::definitions() as $name => $definition) {
@@ -72,14 +103,34 @@ final class update_settings extends base_tool {
         ], ['settings', 'expected_hash']);
     }
 
+    /**
+     * resolve_context
+     *
+     * @param array $arguments
+     * @return context
+     * @throws \dml_exception
+     */
     public function resolve_context(array $arguments): context {
         return context_system::instance();
     }
 
+    /**
+     * supports_dry_run
+     *
+     * @return bool
+     */
     public function supports_dry_run(): bool {
         return true;
     }
 
+    /**
+     * preview
+     *
+     * @param array $arguments
+     * @param authenticated_identity $identity
+     * @return array
+     * @throws \local_mcp\exception\api_exception
+     */
     public function preview(array $arguments, authenticated_identity $identity): array {
         $prepared = settings_service::prepare($arguments);
         return [
@@ -91,6 +142,15 @@ final class update_settings extends base_tool {
         ];
     }
 
+    /**
+     * execute
+     *
+     * @param array $arguments
+     * @param authenticated_identity $identity
+     * @return array
+     * @throws \JsonException
+     * @throws \local_mcp\exception\api_exception
+     */
     public function execute(array $arguments, authenticated_identity $identity): array {
         $prepared = settings_service::prepare($arguments);
         settings_service::apply($prepared);

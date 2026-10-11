@@ -8,7 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU GPL for details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * MCP integration for Personal XP.
@@ -27,16 +31,33 @@ use local_mcp\read\tool_interface;
 use local_mcp\security\authenticated_identity;
 use local_personalxp\service\xp_manager;
 
-/** Personal XP state for a learner and course, also used by LearnLingo. */
+/**
+ * Personal XP state for a learner and course, also used by LearnLingo.
+ */
 final class get_course_xp implements tool_interface {
+    /**
+     * get_name
+     *
+     * @return string
+     */
     public function get_name(): string {
         return 'personalxp_get_course_xp';
     }
 
+    /**
+     * get_title
+     *
+     * @return string
+     */
     public function get_title(): string {
         return 'Get learner Personal XP in a course';
     }
 
+    /**
+     * get_description
+     *
+     * @return string
+     */
     public function get_description(): string {
         return 'Return total XP, current level, next level, level percentage, XP remaining '
             . 'and activity XP map for a Moodle course. This is separate from course completion '
@@ -44,6 +65,11 @@ final class get_course_xp implements tool_interface {
             . 'other enrolled learners require local/personalxp:viewreport.';
     }
 
+    /**
+     * get_input_schema
+     *
+     * @return array
+     */
     public function get_input_schema(): array {
         return [
             'type' => 'object',
@@ -57,14 +83,34 @@ final class get_course_xp implements tool_interface {
         ];
     }
 
+    /**
+     * get_required_capability
+     *
+     * @return string
+     */
     public function get_required_capability(): string {
         return 'local/personalxp:view';
     }
 
+    /**
+     * resolve_context
+     *
+     * @param array $arguments
+     * @return context
+     */
     public function resolve_context(array $arguments): context {
         return context_course::instance((int)$arguments['courseid'], MUST_EXIST);
     }
 
+    /**
+     * execute
+     *
+     * @param array $arguments
+     * @param authenticated_identity $identity
+     * @return array
+     * @throws \coding_exception
+     * @throws api_exception
+     */
     public function execute(array $arguments, authenticated_identity $identity): array {
         $courseid = (int)$arguments['courseid'];
         $userid = (int)($arguments['userid'] ?? $identity->userid);

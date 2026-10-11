@@ -8,7 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU GPL for details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Personal XP MCP integration tests.
@@ -31,9 +35,13 @@ use local_personalxp\service\xp_manager;
 
 defined('MOODLE_INTERNAL') || die();
 
-/** Validate optional READ and WRITE tools, privacy and safe rule updates. */
+/**
+ * Validate optional READ and WRITE tools, privacy and safe rule updates.
+ */
 final class mcp_integration_test extends advanced_testcase {
     /**
+     * require_mcp
+     *
      * @return void
      */
     private function require_mcp(): void {
@@ -43,6 +51,8 @@ final class mcp_integration_test extends advanced_testcase {
     }
 
     /**
+     * test_provider_and_json_schema_are_valid
+     *
      * @return void
      */
     public function test_provider_and_json_schema_are_valid(): void {
@@ -97,7 +107,12 @@ final class mcp_integration_test extends advanced_testcase {
     }
 
     /**
+     * test_course_state_history_and_other_learner_privacy
+     *
      * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \local_mcp\exception\api_exception
      */
     public function test_course_state_history_and_other_learner_privacy(): void {
         $this->require_mcp();
@@ -126,7 +141,11 @@ final class mcp_integration_test extends advanced_testcase {
     }
 
     /**
+     * test_settings_patch_preserves_other_rules_and_awards
+     *
      * @return void
+     * @throws \JsonException
+     * @throws \local_mcp\exception\api_exception
      */
     public function test_settings_patch_preserves_other_rules_and_awards(): void {
         $this->require_mcp();
@@ -160,7 +179,11 @@ final class mcp_integration_test extends advanced_testcase {
     }
 
     /**
+     * test_invalid_levels_and_stale_hash_are_rejected
+     *
      * @return void
+     * @throws \JsonException
+     * @throws \local_mcp\exception\api_exception
      */
     public function test_invalid_levels_and_stale_hash_are_rejected(): void {
         $this->require_mcp();
