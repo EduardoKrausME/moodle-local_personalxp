@@ -32,7 +32,9 @@ use local_personalxp\service\xp_manager;
  */
 final class settings_service {
     /**
-     * @return array Config types and default values.
+     * definitions
+     *
+     * @return array
      */
     public static function definitions(): array {
         return [
@@ -52,7 +54,11 @@ final class settings_service {
     }
 
     /**
-     * @return array Current configuration and an optimistic concurrency hash.
+     * snapshot
+     *
+     * @return array
+     * @throws \JsonException
+     * @throws \dml_exception
      */
     public static function snapshot(): array {
         $settings = [];
@@ -80,8 +86,13 @@ final class settings_service {
     }
 
     /**
-     * @param array $arguments Proposed change.
-     * @return array Validated changes.
+     * prepare
+     *
+     * @param array $arguments
+     * @return array
+     * @throws \JsonException
+     * @throws \dml_exception
+     * @throws api_exception
      */
     public static function prepare(array $arguments): array {
         $before = self::snapshot();
@@ -124,8 +135,12 @@ final class settings_service {
     }
 
     /**
-     * @param string $raw Level lines in XP|Name format.
+     * validate_levels
+     *
+     * @param string $raw
      * @return void
+     * @throws \coding_exception
+     * @throws api_exception
      */
     private static function validate_levels(string $raw): void {
         $lines = preg_split('/\R/u', trim($raw));
@@ -154,8 +169,11 @@ final class settings_service {
     }
 
     /**
-     * @param array $prepared Validated changes.
+     * apply
+     *
+     * @param array $prepared
      * @return void
+     * @throws \dml_transaction_exception
      */
     public static function apply(array $prepared): void {
         global $DB;
