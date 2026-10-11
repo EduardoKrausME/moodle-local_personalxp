@@ -8,10 +8,14 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU GPL for details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * MCP integration for Personal XP.
+ * Auto-discovered MCP tools for Personal XP.
  *
  * @package local_personalxp
  * @copyright 2026 Eduardo Kraus
@@ -20,18 +24,85 @@
 
 namespace local_personalxp\mcp;
 
+use local_mcp\diagnostics;
 use local_mcp\extension\read_provider_interface;
 use local_mcp\extension\write_provider_interface;
+use local_mcp\write\tool_interface;
+use Throwable;
 
-/** Optional MCP provider discovered by local_mcp. */
+/**
+ * Automatically discovered by local_mcp while Personal XP is installed and enabled.
+ *
+ * No lib.php callback is needed; the READ and WRITE tools retain separate scopes.
+ */
 final class provider implements read_provider_interface, write_provider_interface {
-    /** @return \local_mcp\read\tool_interface[] */
+    /**
+     * Return available read tools.
+     *
+     * @return \local_mcp\read\tool_interface[]
+     */
     public function get_read_tools(): array {
-        return [new get_course_xp(), new get_xp_history(), new get_settings()];
+        return self::available_tools([
+            'personalxp_get_course_xp' => get_course_xp::class,
+            'personalxp_get_xp_history' => get_xp_history::class,
+            'personalxp_get_settings' => get_settings::class,
+        ]);
     }
 
-    /** @return \local_mcp\write\tool_interface[] */
+    /**
+     * Return available write tools.
+     *
+     * @return tool_interface[]
+     */
     public function get_write_tools(): array {
-        return [new update_settings()];
+        return self::available_tools([
+            'personalxp_update_settings' => update_settings::class,
+        ]);
+    }
+
+    /**
+     * Keep available tools working when an installation has incomplete files or stale autoload caches.
+     *
+     * @param array $definitions Tool name to PHP class mapping.
+     * @return array Instantiated MCP tools.
+     */
+    private static function available_tools(array $definitions): array {
+        $tools = [];
+        foreach ($definitions as $name => $classname) {
+            $filename = __DIR__ . '/' . substr(strrchr($classname, '\\'), 1) . '.php';
+            try {
+                if (class_exists($classname)) {
+                    $tools[] = new $classname();
+                    continue;
+                }
+                self::log_missing_tool($name, $filename,
+                    is_file($filename) ? 'autoload_failed' : 'file_missing');
+            } catch (Throwable $e) {
+                // A broken optional tool must not prevent other registered tools from running.
+                self::log_missing_tool($name, $filename, 'load_error', get_class($e));
+            }
+        }
+        return $tools;
+    }
+
+    /**
+     * Log only metadata, never the tool arguments, returned data or credentials.
+     *
+     * @param string $name Tool name.
+     * @param string $filename Expected PHP file path.
+     * @param string $status Diagnostic status.
+     * @param string $errorclass PHP error class, if one was thrown.
+     * @return void
+     */
+    private static function log_missing_tool(string $name, string $filename,
+            string $status, string $errorclass = ''): void {
+        diagnostics::event('provider_tool_unavailable', [
+            'provider' => self::class,
+            'tool' => $name,
+            'file' => basename($filename),
+            'status' => $status,
+            'error_class' => $errorclass,
+            'message' => 'Update all Personal XP plugin files and purge Moodle caches.',
+        ], 'ERROR');
     }
 }

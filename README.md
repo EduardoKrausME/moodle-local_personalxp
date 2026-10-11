@@ -125,7 +125,7 @@ still empty.
 ## MCP tools for ChatGPT and LearnLingo
 
 When `local_mcp` is installed and enabled, the plugin automatically exposes four
-tools through `classes/mcp/provider.php`, with no hard dependency on MCP:
+tools through `classes/mcp/provider.php`, with no hard dependency on MCP and no `lib.php` callbacks:
 
 - `personalxp_get_course_xp(courseid, userid?)` reads personal course XP, current
   and next levels, progress and per-activity XP using the same public
@@ -147,3 +147,11 @@ Every course XP read also requires `local/personalxp:view`.
 The LearnLingo theme can show course completion progress alongside personal XP
 and levels by consuming the Personal XP service; MCP lets an administrator
 review and configure the same XP rules from ChatGPT.
+
+
+The MCP discovery convention is `local_personalxp\mcp\provider` in
+`classes/mcp/provider.php`. READ and WRITE tools are registered separately,
+and if an individual MCP tool class is unavailable, the remaining tools remain
+available while a `provider_tool_unavailable` diagnostic is written to the
+PHP error log without logging credentials or learner data. After deployment,
+purge Moodle caches if a newly installed provider is not yet visible.

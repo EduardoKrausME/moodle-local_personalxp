@@ -61,6 +61,42 @@ final class mcp_integration_test extends advanced_testcase {
     }
 
     /**
+     * Verify that local_mcp discovers the provider without lib.php registration.
+     *
+     * @return void
+     */
+    public function test_tools_are_auto_discovered_by_local_mcp(): void {
+        $this->require_mcp();
+        $readproviders = \local_mcp\extension\manager::read_providers();
+        $writeproviders = \local_mcp\extension\manager::write_providers();
+        $this->assertContains(provider::class, array_map('get_class', $readproviders));
+        $this->assertContains(provider::class, array_map('get_class', $writeproviders));
+
+        $readtools = \local_mcp\read\registry::get_tools();
+        $writetools = \local_mcp\write\registry::get_tools();
+        $this->assertArrayHasKey('personalxp_get_course_xp', $readtools);
+        $this->assertArrayHasKey('personalxp_get_xp_history', $readtools);
+        $this->assertArrayHasKey('personalxp_get_settings', $readtools);
+        $this->assertArrayHasKey('personalxp_update_settings', $writetools);
+    }
+
+    /**
+     * One unavailable MCP tool must not hide the other tools.
+     *
+     * @return void
+     */
+    public function test_provider_skips_missing_tools_without_breaking_discovery(): void {
+        $this->require_mcp();
+        $method = new \ReflectionMethod(provider::class, 'available_tools');
+        $tools = $method->invoke(null, [
+            'personalxp_get_settings' => get_settings::class,
+            'personalxp_missing_tool' => 'local_personalxp\\mcp\\intentionally_missing',
+        ]);
+        $this->assertCount(1, $tools);
+        $this->assertSame('personalxp_get_settings', $tools[0]->get_name());
+    }
+
+    /**
      * @return void
      */
     public function test_course_state_history_and_other_learner_privacy(): void {
