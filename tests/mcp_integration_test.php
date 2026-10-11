@@ -33,8 +33,6 @@ use local_personalxp\mcp\settings_service;
 use local_personalxp\mcp\update_settings;
 use local_personalxp\service\xp_manager;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Validate optional READ and WRITE tools, privacy and safe rule updates.
  */
@@ -53,6 +51,9 @@ final class mcp_integration_test extends advanced_testcase {
     /**
      * test_provider_and_json_schema_are_valid
      *
+     * @covers \local_personalxp\mcp\provider
+     * @covers \local_personalxp\mcp\get_settings
+     * @covers \local_personalxp\mcp\update_settings
      * @return void
      */
     public function test_provider_and_json_schema_are_valid(): void {
@@ -73,6 +74,7 @@ final class mcp_integration_test extends advanced_testcase {
     /**
      * Verify that local_mcp discovers the provider without lib.php registration.
      *
+     * @covers \local_personalxp\mcp\provider
      * @return void
      */
     public function test_tools_are_auto_discovered_by_local_mcp(): void {
@@ -93,6 +95,7 @@ final class mcp_integration_test extends advanced_testcase {
     /**
      * One unavailable MCP tool must not hide the other tools.
      *
+     * @covers \local_personalxp\mcp\provider
      * @return void
      */
     public function test_provider_skips_missing_tools_without_breaking_discovery(): void {
@@ -109,6 +112,8 @@ final class mcp_integration_test extends advanced_testcase {
     /**
      * test_course_state_history_and_other_learner_privacy
      *
+     * @covers \local_personalxp\mcp\get_course_xp
+     * @covers \local_personalxp\mcp\get_xp_history
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
@@ -143,6 +148,9 @@ final class mcp_integration_test extends advanced_testcase {
     /**
      * test_settings_patch_preserves_other_rules_and_awards
      *
+     * @covers \local_personalxp\mcp\get_settings
+     * @covers \local_personalxp\mcp\update_settings
+     * @covers \local_personalxp\mcp\settings_service
      * @return void
      * @throws \JsonException
      * @throws \local_mcp\exception\api_exception
@@ -181,6 +189,7 @@ final class mcp_integration_test extends advanced_testcase {
     /**
      * test_invalid_levels_and_stale_hash_are_rejected
      *
+     * @covers \local_personalxp\mcp\settings_service
      * @return void
      * @throws \JsonException
      * @throws \local_mcp\exception\api_exception
