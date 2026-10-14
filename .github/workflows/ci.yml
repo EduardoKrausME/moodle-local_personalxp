@@ -132,3 +132,24 @@ jobs:
     - name: Mark cancelled jobs as failed.
       if: ${{ cancelled() }}
       run: exit 1
+
+  package:
+    name: Validate installable ZIP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package with the Moodle plugin directory
+        run: |
+          git archive --format=zip --prefix=personalxp/ --output=local_personalxp.zip HEAD
+          unzip -t local_personalxp.zip
+          unzip -Z -1 local_personalxp.zip | grep -Fxq 'personalxp/version.php'
+          if unzip -Z -1 local_personalxp.zip | grep -Ev '^personalxp/'; then
+            echo 'Unexpected archive root' >&2
+            exit 1
+          fi
+      - name: Upload installable ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: local_personalxp-installable
+          path: local_personalxp.zip
+          if-no-files-found: error
