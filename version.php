@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->release = '1.3.5';
-$plugin->version = 2026101200;
+$plugin->version = 2026101500;
+$plugin->release = '1.3.6';
 $plugin->component = 'local_personalxp';
 $plugin->requires = 2024100700; // Moodle 4.5.
 $plugin->maturity = MATURITY_STABLE;
