@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die;
 $plugin->version = 2026101501;
 $plugin->release = '1.3.7';
 $plugin->component = 'local_personalxp';
-$plugin->requires = 2024100700; // Moodle 4.5.
+$plugin->requires = 2024100700;
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = [
     'local_ai_bridge' => 2026093001,
