@@ -34,6 +34,8 @@ $context = context_course::instance($courseid);
 require_capability('local/personalxp:view', $context);
 
 $PAGE->set_url(new moodle_url('/local/personalxp/index.php', ['courseid' => $courseid]));
+
+\local_personalxp\mcp_banner::dismiss_if_requested($PAGE->url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('myxp', 'local_personalxp'));
 $PAGE->set_heading(format_string($course->fullname));
@@ -52,6 +54,10 @@ $history = $DB->get_records(
 );
 
 echo $OUTPUT->header();
+if (\local_personalxp\mcp_banner::should_show()) {
+    echo \local_personalxp\mcp_banner::render($OUTPUT, $PAGE->url);
+}
+
 
 echo html_writer::start_div('personalxp-card');
 echo html_writer::div(get_string('currentlevel', 'local_personalxp'), 'personalxp-eyebrow');
