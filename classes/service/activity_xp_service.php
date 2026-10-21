@@ -25,7 +25,6 @@
 namespace local_personalxp\service;
 
 use core\task\manager;
-use core_text;
 use local_ai_bridge\api;
 use local_personalxp\task\assess_course_module;
 use mod_quiz\quiz_settings;
@@ -542,10 +541,10 @@ class activity_xp_service {
      * @return string
      */
     private static function limit_text(string $text, int $length): string {
-        if (core_text::strlen($text) <= $length) {
+        if (strlen($text) <= $length) {
             return $text;
         }
-        return core_text::substr($text, 0, $length);
+        return substr($text, 0, $length);
     }
 
     /**
