@@ -30,7 +30,6 @@
 ## 1.3.2 - 2026-10-07
 
 - Marked the plugin as stable and improved CI dependency setup.
-- Added a public XP history query API for integrations.
 
 ## 1.3.1 - 2026-10-04
 
