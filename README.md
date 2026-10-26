@@ -121,7 +121,6 @@ Page reading time is calculated locally from text length and cannot be inflated 
 quiz slots are created, deleted or switched to another question revision, so a quiz is not permanently scored while it is
 still empty.
 
-
 ## MCP tools for ChatGPT and LearnLingo
 
 When `local_mcp` is installed and enabled, the plugin automatically exposes four
@@ -148,29 +147,9 @@ The LearnLingo theme can show course completion progress alongside personal XP
 and levels by consuming the Personal XP service; MCP lets an administrator
 review and configure the same XP rules from ChatGPT.
 
-
 The MCP discovery convention is `local_personalxp\mcp\provider` in
 `classes/mcp/provider.php`. READ and WRITE tools are registered separately,
 and if an individual MCP tool class is unavailable, the remaining tools remain
 available while a `provider_tool_unavailable` diagnostic is written to the
 PHP error log without logging credentials or learner data. After deployment,
 purge Moodle caches if a newly installed provider is not yet visible.
-
-## Course backups, activity duplication and installable ZIPs
-
-Moodle course backups include Personal XP award history and learner totals only
-when **Include users** is enabled. Activity XP settings (including AI estimates)
-are backed up with their respective course modules even when user data is
-excluded. Duplicating an activity therefore preserves its calculated XP without
-copying another learner's progress.
-
-During restore, Personal XP remaps learner, course, module, forum-post and quiz-
-attempt identifiers, preserves idempotency, and recalculates totals from restored
-awards. Awards whose source event was excluded from the backup are omitted rather
-than retaining potentially unrelated ids from the original Moodle installation.
-
-For Moodle installation, download the `local_personalxp.zip` file attached to a
-GitHub Release, or the `local_personalxp-installable` CI artifact. The ZIP contains
-a single `personalxp/` top-level directory as required by Moodle. Do not use
-GitHub's automatically generated **Source code (zip)** download for installation:
-its top-level folder uses the repository name and is not a valid plugin ZIP.
